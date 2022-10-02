@@ -9,9 +9,10 @@
         transform:
           'scale(' + (20 - index) / 20 + ') translateY(' + 30 * index + 'px)',
         opacity: (10 - index) / 10,
-        'pointer-events': index < 1 ? 'auto' : 'none'
+        'pointer-events': index < 1 ? 'auto' : 'none',
       }"
       v-hammer:pan="onPan"
+      v-hammer:panstart="onPanStart"
       v-hammer:panend="onPanEnd"
     >
       Card {{ item }}
@@ -24,7 +25,7 @@ export default {
   name: "TinderSwipe",
   data() {
     return {
-      arrayData: [1, 2, 3, 4, 5, 6],
+      arrayData: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     };
   },
   methods: {
@@ -36,7 +37,7 @@ export default {
         card.style.transform =
           "scale(" + (20 - index) / 20 + ") translateY(" + 30 * index + "px)";
         card.style.opacity = (10 - index) / 10;
-        card.style.pointerEvents = index < 1 ? 'auto' : 'none'
+        card.style.pointerEvents = index < 1 ? "auto" : "none";
       });
     },
     onPan(event) {
@@ -60,39 +61,65 @@ export default {
         rotate +
         "deg)";
     },
+    onPanStart(event) {},
     onPanEnd(event) {
       const target = event.target;
       const el = target.closest(".tinder--card");
 
       el.classList.remove("moving");
-
       const moveOutWidth = document.body.clientWidth;
-      const keep = Math.abs(event.deltaX) < 80 || Math.abs(event.velocityX) < 0.5;
+      const moveOutHeight = document.body.clientHeight;
+      const keep =
+        Math.abs(event.deltaX) > 80 ||
+        Math.abs(event.deltaY) > 80 ||
+        Math.abs(event.velocity) > 0.5;
+      const moveX = Math.abs(event.deltaX) > 80
 
-      el.classList.toggle("removed", !keep);
+      el.classList.toggle("removed", keep);
 
-      if (keep) {
+      if (!keep) {
         el.style.transform = "";
       } else {
-        const endX = Math.max(
-          Math.abs(event.velocityX) * moveOutWidth,
-          moveOutWidth
-        );
-        const toX = event.deltaX > 0 ? endX : -endX;
-        const endY = Math.abs(event.velocityY) * moveOutWidth;
-        const toY = event.deltaY > 0 ? endY : -endY;
-        const xMulti = event.deltaX * 0.03;
-        const yMulti = event.deltaY / 80;
-        const rotate = xMulti * yMulti;
+        if (moveX) {
+          const endX = Math.max(
+            Math.abs(event.velocityX) * moveOutWidth,
+            moveOutWidth
+          );
+          const toX = event.deltaX > 0 ? endX : -endX;
+          const endY = Math.abs(event.velocityY) * moveOutWidth;
+          const toY = event.deltaY > 0 ? endY : -endY;
+          const xMulti = event.deltaX * 0.03;
+          const yMulti = event.deltaY / 80;
+          const rotate = xMulti * yMulti;
+          el.style.transform =
+            "translate(" +
+            toX +
+            "px, " +
+            (toY + event.deltaY) +
+            "px) rotate(" +
+            rotate +
+            "deg)";
+        } else {
+          const endY = Math.max(
+            Math.abs(event.velocityY) * moveOutHeight,
+            moveOutHeight
+          );
+          const toY = event.deltaY > 0 ? endY : -endY;
+          const endX = Math.abs(event.velocityX) * moveOutHeight;
+          const toX = event.deltaX > 0 ? endX : -endX;
+          const yMulti = event.deltaY * 0.03;
+          const xMulti = event.deltaX / 80;
+          const rotate = xMulti * yMulti;
 
-        el.style.transform =
-          "translate(" +
-          toX +
-          "px, " +
-          (toY + event.deltaY) +
-          "px) rotate(" +
-          rotate +
-          "deg)";
+          el.style.transform =
+            "translate(" +
+            toX +
+            "px, " +
+            (toY + event.deltaX) +
+            "px) rotate(" +
+            rotate +
+            "deg)";
+        }
         this.initCards();
       }
     },
