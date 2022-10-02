@@ -26,6 +26,8 @@ export default {
   data() {
     return {
       arrayData: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      xDown: null,
+      yDown: null,
     };
   },
   methods: {
@@ -61,7 +63,10 @@ export default {
         rotate +
         "deg)";
     },
-    onPanStart(event) {},
+    onPanStart(event) {
+      this.xDown = event.center.x;
+      this.yDown = event.center.y;
+    },
     onPanEnd(event) {
       const target = event.target;
       const el = target.closest(".tinder--card");
@@ -73,7 +78,7 @@ export default {
         Math.abs(event.deltaX) > 80 ||
         Math.abs(event.deltaY) > 80 ||
         Math.abs(event.velocity) > 0.5;
-      const moveX = Math.abs(event.deltaX) > 80
+      const moveX = Math.abs(event.deltaX) > 80;
 
       el.classList.toggle("removed", keep);
 
@@ -121,6 +126,36 @@ export default {
             "deg)";
         }
         this.initCards();
+
+        if (!this.xDown || !this.yDown) return;
+
+        const xUp = event.center.x;
+        const yUp = event.center.y;
+
+        let xDiff = this.xDown - xUp;
+        let yDiff = this.yDown - yUp;
+        // немного поясню здесь. Тут берутся модули движения по оси абсцисс и ординат (почему модули? потому что если движение сделано влево или вниз, то его показатель будет отрицательным) и сравнивается, чего было больше: движения по абсциссам или ординатам. Нужно это для того, чтобы, если пользователь провел вправо, но немного наискосок вниз, сработал именно коллбэк для движения вправо, а ни как-то иначе.
+        if (Math.abs(xDiff) > Math.abs(yDiff)) {
+          /*most significant*/
+          if (xDiff > 0) {
+            console.log("swipe left");
+            /* left swipe */
+          } else {
+            console.log("swipe right");
+            /* right swipe */
+          }
+        } else {
+          if (yDiff > 0) {
+            console.log("swipe up");
+            /* up swipe */
+          } else {
+            console.log("swipe down");
+            /* down swipe */
+          }
+        }
+        /* reset values */
+        this.xDown = null;
+        this.yDown = null;
       }
     },
   },

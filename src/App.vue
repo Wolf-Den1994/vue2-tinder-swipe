@@ -17,19 +17,20 @@ export default {
 
 <style lang="scss">
 body {
-  max-width: 360px;
-  width: 100%;
   overflow: hidden;
+  margin: 0;
+  background-color: skyblue;
 }
 
 #app {
+  margin: 60px auto 0;
+  max-width: 360px;
   width: 100%;
-  height: 80vh;
+  height: 50vh;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
