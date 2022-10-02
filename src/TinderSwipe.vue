@@ -9,6 +9,7 @@
         transform:
           'scale(' + (20 - index) / 20 + ') translateY(' + 30 * index + 'px)',
         opacity: (10 - index) / 10,
+        'pointer-events': index < 1 ? 'auto' : 'none'
       }"
       v-hammer:pan="onPan"
       v-hammer:panend="onPanEnd"
@@ -35,6 +36,7 @@ export default {
         card.style.transform =
           "scale(" + (20 - index) / 20 + ") translateY(" + 30 * index + "px)";
         card.style.opacity = (10 - index) / 10;
+        card.style.pointerEvents = index < 1 ? 'auto' : 'none'
       });
     },
     onPan(event) {
